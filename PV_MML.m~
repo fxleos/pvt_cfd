@@ -1,0 +1,106 @@
+%%This script is to calculate the mismatch loss of the PV arrays
+%PV temperature field
+T_pv=[t_pv t_pv t_pv t_pv t_pv t_pv];
+%PV placement
+T_Array=mat2cell(T_pv,[3 14*ones(1,13) 2],14*ones(1,6));
+%Temperature of each module
+T_module=ones(size(T_Array)-[2 0]);
+for i=1:size(T_module,1)
+    for j=1:size(T_module,2)
+        %Average temperature of all elements
+        T_module(i,j)=sum(sum(T_Array{i+1,j}))/numel(T_Array{i+1,j});
+    end
+end
+%%calculate properties of each module
+%NOCT coditions
+T_noct=48;
+Vop_noct=37.6;
+Isc_noct=4.52;
+Pmax_noct=115;
+FF_noct=Pmax_noct/(Vop_noct*Isc_noct);
+c_Vop=-0.28/100;
+c_Isc=0.0006/100;
+c_Pmax=-0.38/100;
+%Initialization
+Vop=ones(size(T_module));
+Isc=Vop;
+FF=Vop;
+Pmax=Vop;
+%Caculation
+for i=1:size(T_module,1)
+    for j=1:size(T_module,2)
+        Vop(i,j)=Vop_noct*exp(c_Vop*(T_module(i,j)-T_noct));
+        Isc(i,j)=Isc_noct*exp(c_Isc*(T_module(i,j)-T_noct));
+        Pmax(i,j)=Pmax_noct*exp(c_Pmax*(T_module(i,j)-T_noct));
+        FF(i,j)=Pmax(i,j)/(Vop(i,j)*Isc(i,j));
+    end
+end
+
+%%Model and calculate mismatch loss
+syms C
+eqn= C^2/((1+C)*(C+log(1+C)))==mean(mean(FF));
+C=solve(eqn,C);
+%Connection in array
+Array_original=cell(size(T_module,1),size(T_module,2));
+for i=1:size(Array_original,1)
+    for j=1:size(Array_original,2)
+        Array_original{i,j}=[i,j];
+    end
+end
+%Array is a cell storing the index for the module
+%A:Vertically parallel
+Array=Array_original;
+
+%B:Horizontally parallel
+%Array=Array_original';
+
+%C:All in sieres
+%Array=cell(size(Array_original,1)*size(Array_original,2),1);
+%k=1;
+%for i=1:size(Array_original,1)
+%    for j=1:size(Array_original,2)
+%        Array{k,1}=Array_original{i,j};
+%        k=k+1;
+%    end
+%end
+
+%D:2nd/3rd Vertically
+%m=2;
+%Array=cell(size(Array_original,1)*size(Array_original,2)/m,m);
+%for l=1:m
+%    k=1;
+%    for i=1:size(Array_original,1)
+%        for j=size(Array_original,2)/m*(l-1)+(1:size(Array_original,2)/m)
+%            Array{k,l}=Array_original{i,j};
+%            k=k+1;
+%        end
+%    end
+%end
+
+L=size(Array,1);
+M=size(Array,2);
+
+%Rearrange the module as array defines
+Array_Vop=ones(L,M);
+Array_Isc=ones(L,M);
+Array_FF=ones(L,M);
+Array_Pmax=ones(L,M);
+for i=1:L
+    for j=1:M
+        Array_Vop(i,j)=Vop(Array{i,j}(1),Array{i,j}(2));
+        Array_Isc(i,j)=Isc(Array{i,j}(1),Array{i,j}(2));
+        Array_FF(i,j)=FF(Array{i,j}(1),Array{i,j}(2));
+        Array_Pmax(i,j)=Pmax(Array{i,j}(1),Array{i,j}(2));
+    end
+    
+end
+
+P_ideal=sum(Array_Pmax);
+omiga=P_ideal/mean(P_ideal);
+
+for q=1:M
+    syms Cq
+    eqnq= Cq^2/((1+Cq)*(Cq+log(1+Cq)))==mean(FF(:,q));
+    Cq=solve(eqnq,Cq);
+    sigma_I=std(Array_I
+end

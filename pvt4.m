@@ -10,7 +10,7 @@ x_d=1.900;   %length in longtitute direction, m
 y_d=0.071*2;   %length in latitute direction
 z_d=0.002;   %length in thickness direction
 % Select channel type
-channel_type='N';   %Channel type: 'P', 'U', 'N','P141'
+channel_type='P141';   %Channel type: 'P', 'U', 'N','P141'
 meshing;
 figure
 subplot(2,1,1)
