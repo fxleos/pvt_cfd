@@ -26,6 +26,18 @@ switch channel_type
     end_p=[x_m,y_m];
     m_in=[1];
     velo_in=[1,0];
+    case 'N12N'
+    %N12
+    start_p=[1,1];
+    end_p=[1,y_m];
+    m_in=[1];
+    velo_in=[1,0];
+    case 'MEBU'
+    %MEBU
+    start_p=[1,6];
+    end_p=[1,2];
+    m_in=[1];
+    velo_in=[1,0];
 end
 [x_in,y_in]=size(start_p);
 if x_in==1

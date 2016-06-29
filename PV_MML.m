@@ -1,6 +1,11 @@
 %%This script is to calculate the mismatch loss of the PV arrays
 %PV temperature field
-T_pv=[t_pv t_pv t_pv t_pv t_pv t_pv];
+%P141
+%T_pv=[t_pv t_pv t_pv t_pv t_pv t_pv];
+%N
+%T_pv=[t_pv fliplr(t_pv) t_pv fliplr(t_pv) t_pv fliplr(t_pv) t_pv fliplr(t_pv) t_pv fliplr(t_pv) t_pv fliplr(t_pv)];
+%N12N
+T_pv=t_pv;
 %PV placement
 T_Array=mat2cell(T_pv,[3 14*ones(1,13) 2],14*ones(1,6));
 %Temperature of each module
@@ -13,10 +18,12 @@ for i=1:size(T_module,1)
 end
 %%calculate properties of each module
 %NOCT coditions
-T_noct=48;
+Area_noct=2.598*0.37;
+T_noct=25;
+I_noct=1000;
 Vop_noct=37.6;
-Isc_noct=4.52;
-Pmax_noct=115;
+Isc_noct=4.52*(I/I_noct)*(196*x_m_d*y_m_d/Area_noct);
+Pmax_noct=115*(I/I_noct)*(196*x_m_d*y_m_d/Area_noct);
 FF_noct=Pmax_noct/(Vop_noct*Isc_noct);
 c_Vop=-0.28/100;
 c_Isc=0.0006/100;
@@ -47,35 +54,54 @@ for i=1:size(Array_original,1)
         Array_original{i,j}=[i,j];
     end
 end
+
+%There are several type of patterns
+pattern=1:5;
 %Array is a cell storing the index for the module
-%A:Vertically parallel
-%Array=Array_original;
-
-%B:Horizontally parallel
-%Array=Array_original';
-
-%C:All in sieres
-%Array=cell(size(Array_original,1)*size(Array_original,2),1);
-%k=1;
-%for i=1:size(Array_original,1)
-%    for j=1:size(Array_original,2)
-%        Array{k,1}=Array_original{i,j};
-%        k=k+1;
-%    end
-%end
-
-%D:2nd/3rd Vertically
-%m=2;
-%Array=cell(size(Array_original,1)*size(Array_original,2)/m,m);
-%for l=1:m
-%    k=1;
-%    for i=1:size(Array_original,1)
-%        for j=size(Array_original,2)/m*(l-1)+(1:size(Array_original,2)/m)
-%            Array{k,l}=Array_original{i,j};
-%            k=k+1;
-%        end
-%    end
-%end
+for p=1:length(pattern)
+    switch pattern(p)
+        case 1
+            %A:Vertically parallel
+            Array=Array_original;
+        case 2
+            %B:Horizontally parallel
+            Array=Array_original';
+        case 3
+            %C:All in sieres
+            Array=cell(size(Array_original,1)*size(Array_original,2),1);
+            k=1;
+            for i=1:size(Array_original,1)
+                for j=1:size(Array_original,2)
+                    Array{k,1}=Array_original{i,j};
+                    k=k+1;
+                end
+            end
+        case 4
+        %D:2nd Vertically
+            m=2;
+            Array=cell(size(Array_original,1)*size(Array_original,2)/m,m);
+            for l=1:m
+                k=1;
+                for i=1:size(Array_original,1)
+                    for j=size(Array_original,2)/m*(l-1)+(1:size(Array_original,2)/m)
+                    Array{k,l}=Array_original{i,j};
+                    k=k+1;
+                    end
+                end
+            end
+        case 5
+            m=3;
+            Array=cell(size(Array_original,1)*size(Array_original,2)/m,m);
+            for l=1:m
+                k=1;
+                for i=1:size(Array_original,1)
+                    for j=size(Array_original,2)/m*(l-1)+(1:size(Array_original,2)/m)
+                    Array{k,l}=Array_original{i,j};
+                    k=k+1;
+                    end
+                end
+            end
+    end
 
 L=size(Array,1);
 M=size(Array,2);
@@ -105,4 +131,9 @@ for q=1:M
     sigma_I=std(Array_Isc(:,q))/mean(Array_Isc(:,q));
     P_MML=P_MML+omiga(q)*(Cq+2)/2*sigma_I^2;
 end
+pattern(p)
 P_MML=(1-1/L)/M*P_MML+(C_overal+2)/2*std(Array_Vop(:))^2/L*[1-1/M]
+clear Array
+end
+'P_ideal'
+sum(sum(Array_Pmax))

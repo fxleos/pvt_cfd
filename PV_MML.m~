@@ -39,7 +39,7 @@ end
 %%Model and calculate mismatch loss
 syms C
 eqn= C^2/((1+C)*(C+log(1+C)))==mean(mean(FF));
-C=solve(eqn,C);
+C_overal=solve(eqn,C);
 %Connection in array
 Array_original=cell(size(T_module,1),size(T_module,2));
 for i=1:size(Array_original,1)
@@ -47,22 +47,29 @@ for i=1:size(Array_original,1)
         Array_original{i,j}=[i,j];
     end
 end
+
+%There are several type of patterns
+pattern=1:5;
 %Array is a cell storing the index for the module
-%A:Vertically parallel
-Array=Array_original;
-
-%B:Horizontally parallel
-%Array=Array_original';
-
-%C:All in sieres
-%Array=cell(size(Array_original,1)*size(Array_original,2),1);
-%k=1;
-%for i=1:size(Array_original,1)
-%    for j=1:size(Array_original,2)
-%        Array{k,1}=Array_original{i,j};
-%        k=k+1;
-%    end
-%end
+for p=1:length(pattern)
+    switch pattern(p)
+        case 1
+            %A:Vertically parallel
+            Array=Array_original;
+        case 2
+            %B:Horizontally parallel
+            Array=Array_original';
+        case 3
+            %C:All in sieres
+            Array=cell(size(Array_original,1)*size(Array_original,2),1);
+            k=1;
+            for i=1:size(Array_original,1)
+                for j=1:size(Array_original,2)
+                    Array{k,1}=Array_original{i,j};
+                    k=k+1;
+                end
+            end
+        case 4
 
 %D:2nd/3rd Vertically
 %m=2;
@@ -97,10 +104,13 @@ end
 
 P_ideal=sum(Array_Pmax);
 omiga=P_ideal/mean(P_ideal);
-
+P_MML=0;
 for q=1:M
-    syms Cq
-    eqnq= Cq^2/((1+Cq)*(Cq+log(1+Cq)))==mean(FF(:,q));
-    Cq=solve(eqnq,Cq);
-    sigma_I=std(Array_I
+    syms C
+    eqn= C^2/((1+C)*(C+log(1+C)))==mean(Array_FF(:,q));
+    Cq=solve(eqn,C);
+    sigma_I=std(Array_Isc(:,q))/mean(Array_Isc(:,q));
+    P_MML=P_MML+omiga(q)*(Cq+2)/2*sigma_I^2;
+end
+P_MML=(1-1/L)/M*P_MML+(C_overal+2)/2*std(Array_Vop(:))^2/L*[1-1/M]
 end

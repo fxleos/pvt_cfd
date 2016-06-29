@@ -1,23 +1,30 @@
-%% 2-d simulation for pvt
-%Xingliang Fang
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%           Numerical modelling and design of PVT modules               %%
+%                      Semester Project                                   %
+%                       Xingliang Fang                                    %
+%             Chair of Architecture and Building Systems                  %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 close all;
 
-%% Define Geometry and Mesh
-% Overall dimensions
-x_d=1.900;   %length in longtitute direction, m
-y_d=0.071*12;   %length in latitute direction
-z_d=0.002;   %length in thickness direction
-% Select channel type
-channel_type='N12N';   %Channel type: 'P', 'U', 'N','P141'
+%%Define Geometry and Mesh
+
+%Overall dimensions
+x_d=1.900;      %length in longtitute direction, m
+y_d=0.071*12;    %length in latitute direction,m
+z_d=0.002;      %length in thickness direction, m
+
+%Select channel type
+channel_type='MEBU';    %Channel type: 'P','U','N','P141','N12N'
 meshing;
 figure
 subplot(2,1,1)
 contourf(channel_flag',1)
 
+%Channel parameters
 d_h=2.106/1000; %hydraulic diameter, m
 a_cross=10.882/1000000;  %cross section area, m^2
 p_cross=20.6693/1000;
+
 %% Material Properties
 h_a = 10;
 lamda_pv= 202.4;
@@ -26,10 +33,11 @@ cp_water= 4200;
 density_water= 1000;
 viscocity_water=0.001002;
 Pr = 7;
+
 %% Initialization
 t_pv_ini=25;    %initial temperature for pv
 t_pv=t_pv_ini*ones(x_m,y_m);
-t_water_ini=15; %initial temperature for water
+t_water_ini=25; %initial temperature for water
 t_water=t_water_ini*channel_flag;
 %ambient temperature
 t_a =25;        
@@ -37,14 +45,11 @@ t_a =25;
 I=1000;
 I_m=I*x_m_d*y_m_d;  %elemental I
 %flow velocity
-velo_amp=0.25;
+velo_amp=1.2;
 calculate_velocity;
 
 mass_rate=m*velo_amp*density_water*a_cross;
 Re = density_water*(abs(u)+abs(v))*velo_amp*d_h/viscocity_water;
-
-
-
 
 %% simulation
 % iteration steps
@@ -55,13 +60,13 @@ for i = 1:it
     
     y=1;
     if Re(x,y)>2300
-        if t_pv>t_water
+        if t_pv(x,y)>t_water(x,y)
             Nu= 0.023*Re(x,y)^0.8*Pr^0.4;
         else
             Nu= 0.023*Re(x,y)^0.8*Pr^0.3;
         end
     else
-        if t_pv>t_water
+        if t_pv(x,y)>t_water(x,y)
             Nu= 5;
         else
             Nu= 4.5;
@@ -136,13 +141,13 @@ for i = 1:it
             t_up = (t_water(x+1,y)+t_water(x,y+1))/2;
     end
     if Re(x,y)>2300
-        if t_pv>t_water
+        if t_pv(x,y)>t_water(x,y)
             Nu= 0.023*Re(x,y)^0.8*Pr^0.4;
         else
             Nu= 0.023*Re(x,y)^0.8*Pr^0.3;
         end
     else
-        if t_pv>t_water
+        if t_pv(x,y)>t_water(x,y)
             Nu= 5;
         else
             Nu= 4.5;
@@ -181,13 +186,13 @@ for i = 1:it
                 t_up = (t_water(x+1,y)+t_water(x,y+1))/2;
         end
         if Re(x,y)>2300
-            if t_pv>t_water
+            if t_pv(x,y)>t_water(x,y)
                 Nu= 0.023*Re(x,y)^0.8*Pr^0.4;
             else
                 Nu= 0.023*Re(x,y)^0.8*Pr^0.3;
             end
         else
-            if t_pv>t_water
+            if t_pv(x,y)>t_water(x,y)
                 Nu= 5;
             else
                 Nu= 4.5;
@@ -226,13 +231,13 @@ for i = 1:it
                         t_up = (t_water(x+1,y)+t_water(x,y+1))/2;
                 end
                 if Re(x,y)>2300
-                    if t_pv>t_water
+                    if t_pv(x,y)>t_water(x,y)
                         Nu= 0.023*Re(x,y)^0.8*Pr^0.4;
                     else
                         Nu= 0.023*Re(x,y)^0.8*Pr^0.3;
                     end
                 else
-                    if t_pv>t_water
+                    if t_pv(x,y)>t_water(x,y)
                         Nu= 5;
                     else
                         Nu= 4.5;
@@ -273,13 +278,13 @@ for i = 1:it
                     t_up = (t_water(x+1,y)+t_water(x,y+1))/2;
             end
             if Re(x,y)>2300
-                if t_pv>t_water
+                if t_pv(x,y)>t_water(x,y)
                     Nu= 0.023*Re(x,y)^0.8*Pr^0.4;
                 else
                     Nu= 0.023*Re(x,y)^0.8*Pr^0.3;
                 end
             else
-                if t_pv>t_water
+                if t_pv(x,y)>t_water(x,y)
                     Nu= 5;
                 else
                     Nu= 4.5;
@@ -320,13 +325,13 @@ for i = 1:it
             t_up = (t_water(x+1,y)+t_water(x,y+1))/2;
     end
     if Re(x,y)>2300
-        if t_pv>t_water
+        if t_pv(x,y)>t_water(x,y)
             Nu= 0.023*Re(x,y)^0.8*Pr^0.4;
         else
             Nu= 0.023*Re(x,y)^0.8*Pr^0.3;
         end
     else
-        if t_pv>t_water
+        if t_pv(x,y)>t_water(x,y)
             Nu= 5;
         else
             Nu= 4.5;
@@ -363,13 +368,13 @@ for i = 1:it
                     t_up = (t_water(x+1,y)+t_water(x,y+1))/2;
             end
             if Re(x,y)>2300
-                if t_pv>t_water
+                if t_pv(x,y)>t_water(x,y)
                     Nu= 0.023*Re(x,y)^0.8*Pr^0.4;
                 else
                     Nu= 0.023*Re(x,y)^0.8*Pr^0.3;
                 end
             else
-                if t_pv>t_water
+                if t_pv(x,y)>t_water(x,y)
                     Nu= 5;
                 else
                     Nu= 4.5;
@@ -407,13 +412,13 @@ for i = 1:it
             t_up = (t_water(x+1,y)+t_water(x,y+1))/2;
     end
     if Re(x,y)>2300
-        if t_pv>t_water
+        if t_pv(x,y)>t_water(x,y)
             Nu= 0.023*Re(x,y)^0.8*Pr^0.4;
         else
             Nu= 0.023*Re(x,y)^0.8*Pr^0.3;
         end
     else
-        if t_pv>t_water
+        if t_pv(x,y)>t_water(x,y)
             Nu= 5;
         else
             Nu= 4.5;
@@ -432,6 +437,3 @@ end
 subplot(2,1,2)
 [C,h]=contourf(t_pv(3:x_m-2,:)');
 clabel(C,h)
-
-%% Electric efficiency
-eff_ele=15+0.38*(25-sum(sum(t_pv))/numel(t_pv))
