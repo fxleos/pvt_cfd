@@ -60,6 +60,7 @@ switch channel_type
         channel_flag=[subchannel subchannel subchannel subchannel subchannel subchannel subchannel subchannel subchannel subchannel subchannel subchannel];
         channel_flag(7,3:5)=0;
         channel_flag(1:6,[2,6])=1;
+        channel_flag(1,2)=0;
         channel_flag([x_m-7,x_m-3],[1,y_m])=0;
         channel_flag(x_m-6:x_m-4,[2,y_m-1])=1;
         clear subchannel

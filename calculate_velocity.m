@@ -35,7 +35,7 @@ switch channel_type
     case 'MEBU'
     %MEBU
     start_p=[1,6];
-    end_p=[1,2];
+    end_p=[2,2];
     m_in=[1];
     velo_in=[1,0];
 end
