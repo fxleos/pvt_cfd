@@ -1,8 +1,9 @@
-# pvt_cfd
+# Numerical modelling and design of hybrid photovoltaic/thermal modules 
 Semester project at chair of architecture and building systems
 Numerical modelling and design of hybrid photovoltaic/thermal modules 
 
 Author: Xingliang Fang
+
 Supervisor: Dr. Johannes Hofer, Prof. Arno Schlueter
 
 
@@ -18,6 +19,6 @@ Supervisor: Dr. Johannes Hofer, Prof. Arno Schlueter
 
 5. Run ‘write journal’, if you want to save the results into journal files
 
-*To run the script program in MATLAB, you can either enter the filename (e.g. ‘pre_setup’ in command window and then press ‘ENTER’ or open it in editor window and click ‘RUN’ bottom in the tool bars
+*To run the script program in MATLAB, you can either enter the filename (e.g. ‘pre_setup’) in command window and then press ‘ENTER’ or open it in editor window and click ‘RUN’ bottom in the tool bars
 
 ###END###
