@@ -9,6 +9,8 @@ Supervisor: Dr. Johannes Hofer, Prof. Arno Schlueter
 
 ###USER GUILD###
 
+0. Launch MATLAB: all the code can only be run under MATLAB environment
+
 1. Open ‘pre_setup’, define and confirm all the parameters, run it
 
 2. Run ‘hydraulic_simulation’
